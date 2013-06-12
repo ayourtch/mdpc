@@ -1,0 +1,12 @@
+#!/bin/sh
+#
+# Supply the test name as an argument to mark it as passed, and note down the new output.
+#
+export PATH=".:$PATH"
+ATEST=`basename $1`
+echo "passing $ATEST"
+echo "output:"
+sh tests/run/$ATEST 2>&1 | cat /dev/stdin > tests/out/$ATEST
+echo "========================================"
+cat tests/out/$ATEST
+echo "========================================"

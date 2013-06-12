@@ -1,0 +1,4 @@
+RULE: IPv4: 1.1.1.1/32, EA len: 4, Flags: 0, IPv6: 2001:6f8:147e:1000::/52
+PD prefix: 20011:6f8:147e:1e00::
+Could not extract EAbits from PD prefix(es): '20011:6f8:147e:1e00::/56,598127,123'
+calc_cernet_misc: map_psid_bits: 4, map_suffix_bits: 0, m_bits: 8

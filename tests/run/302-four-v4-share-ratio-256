@@ -1,0 +1,5 @@
+#!/bin/sh
+export PREFIXES=2001:6F8:3D4:DF10::/60,598127,2585327
+export OPTION_48879=`echo "004202 000f 1e 99101154 0A 00 32 200106f803d4c0 4203 0009 40 261000d01208caff" | sed -e 's/ //g'`
+
+mdpc -w br-wan6 -m 1300

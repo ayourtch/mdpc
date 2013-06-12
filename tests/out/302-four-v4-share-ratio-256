@@ -1,0 +1,7 @@
+RULE: IPv4: 153.16.17.84/30, EA len: 10, Flags: 0, IPv6: 2001:6f8:3d4:c000::/50
+PD prefix: 2001:6F8:3D4:DF10::
+EAbits-multibyte [ 50 .. 60 ] = 497
+calc_cernet_misc: map_psid_bits: 8, map_suffix_bits: 2, m_bits: 4
+DMR: IPv6: 2610:d0:1208:caff::/64
+ivictl -s -i br-lan -I br-wan6 -H -a 192.168.1.1/24 -A 153.16.17.85/30 -P 2001:6f8:3d4:c000::/50 -R 256 -M 16 -o 241 -z 1.1.1.0/24 -c 1300 -f -T
+ivictl -r -d -P 2610:d0:1208:caff::/64 -T

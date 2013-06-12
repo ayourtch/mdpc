@@ -1,0 +1,8 @@
+Can not get the value of the MAP env var OPTION_48879
+
+Usage: 
+   -m <mss> : specify the MSS to pass to IVICTL
+   -v : use vendor-specific option parsing hack
+   -w <wan_intf> : WAN interface name
+   -o <optname> : MAP provisioning option environment variable name
+   Default environment variable with MAP hex config: OPTION_48879

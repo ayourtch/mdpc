@@ -1,0 +1,3 @@
+RULE: IPv4: 1.1.1.1/32, EA len: 4, Flags: 0, IPv6: 2001:6f8:147e:1000::/52
+Can not get allocated prefixes from environment var PREFIXES
+calc_cernet_misc: map_psid_bits: 4, map_suffix_bits: 0, m_bits: 8
