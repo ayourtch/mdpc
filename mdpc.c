@@ -7,6 +7,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <unistd.h>
+#include <ctype.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -473,7 +474,7 @@ int parse_map(uint8_t *d, int dlen, cpe_config_t *cfg) {
       free(opt_val);
     }
   }
-
+  return 1;
 }
 
 /* 
