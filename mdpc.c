@@ -224,7 +224,7 @@ int process_opt_map_portparam(uint8_t *d, int dlen, map_portparam_t *r) {
 
 typedef struct misc_arg_t {
   int r_value;
-  int m_value;
+  int z_value;
   int64_t psid;
   int64_t suffix;
   int pd_prefix6_len;
@@ -249,12 +249,12 @@ struct in_addr offset_ipv4(struct in_addr base, int64_t suffix) {
 int cernet_map_rule_print(char *dst, size_t size, void *map_arg, misc_arg_t *cfg) {
   map_bfmr_t *r = map_arg;
   char v6addr[INET6_ADDRSTRLEN+1];
-  char *fmt = "ivictl -s -i br-lan -I %s -H -a 192.168.1.1/24 -A %s/%d -P %s/%d -R %d -M %d -o %lld -z 1.1.1.0/24 -c %d -f -T";
+  char *fmt = "ivictl -s -i br-lan -I %s -H -a 192.168.1.1/24 -A %s/%d -P %s/%d -R %d -z %d -o %lld -c %d -f -T";
 
   return snprintf(dst, size, fmt, 
                   cfg->cpe.wan_intf, inet_ntoa(offset_ipv4(r->rule_ipv4_prefix, cfg->suffix)), r->prefix4_len,
                   inet_ntop(AF_INET6, &r->rule_ipv6_prefix, v6addr, sizeof(v6addr)), r->prefix6_len,
-                  cfg->r_value, cfg->m_value, cfg->psid, cfg->cpe.mss);
+                  cfg->r_value, cfg->z_value, cfg->psid, cfg->cpe.mss);
 }
 
 int cernet_dmr_print(char *dst, size_t size, void *map_arg, misc_arg_t *cfg) {
@@ -402,7 +402,7 @@ int calc_cernet_misc(map_bfmr_t *r, misc_arg_t *cfg) {
 
 
   cfg->r_value = 1 << map_psid_bits;
-  cfg->m_value = 1 << m_bits;
+  cfg->z_value = map_port_offset;
   if (eabits >= 0) {
     cfg->psid = eabits & ((((int64_t)1) << map_psid_bits)-1); 
     cfg->suffix = eabits >> map_psid_bits;
