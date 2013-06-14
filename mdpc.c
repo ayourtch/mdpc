@@ -250,7 +250,7 @@ struct in_addr offset_ipv4(struct in_addr base, int64_t suffix) {
 int cernet_map_rule_print(char *dst, size_t size, void *map_arg, misc_arg_t *cfg) {
   map_bfmr_t *r = map_arg;
   char v6addr[INET6_ADDRSTRLEN+1];
-  char *fmt = "ivictl -s -i br-lan -I %s -H -a 192.168.1.1/24 -A %s/%d -P %s/%d -R %d -z %d -o %lld -c %d -f -T";
+  char *fmt = "ivictl -s -i br-lan -I %s -H -a 192.168.1.1/24 -A %s/%d -P %s/%d -R %d -z %d -o %lld -c %d -T";
 
   return snprintf(dst, size, fmt, 
                   cfg->cpe.wan_intf, inet_ntoa(offset_ipv4(r->rule_ipv4_prefix, cfg->suffix)), r->prefix4_len,

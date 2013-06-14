@@ -3,5 +3,5 @@ PD prefix: 2001:6f8:147e:1e00::
 EAbits [ 52 .. 56 ] = 14
 calc_cernet_misc: map_psid_bits: 4, map_suffix_bits: 0, m_bits: 8
 DMR: IPv6: 2610:d0:1208:cafe::/64
-ivictl -s -i br-lan -I wan0 -H -a 192.168.1.1/24 -A 1.1.1.1/32 -P 2001:6f8:147e:1000::/52 -R 16 -z 4 -o 14 -c 1234 -f -T
+ivictl -s -i br-lan -I wan0 -H -a 192.168.1.1/24 -A 1.1.1.1/32 -P 2001:6f8:147e:1000::/52 -R 16 -z 4 -o 14 -c 1234 -T
 ivictl -r -d -P 2610:d0:1208:cafe::/64 -T
