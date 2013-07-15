@@ -308,10 +308,6 @@ int64_t extract_eabits(map_bfmr_t *r, struct in6_addr *pd_prefix, int pd_prefix_
   minlen = r->prefix6_len;
   maxlen = pd_prefix_len;
 
-  if (maxlen - minlen >= 16) {
-    error("Computed EAbits length (%d-%d) is too long\n", maxlen, minlen);
-    return -1;
-  }
   if (maxlen - minlen > r->ea_len) {
     error("EA length computed from prefix (%d) is longer than configured via DHCPv6 (%d)\n", 
         maxlen - minlen, r->ea_len);
