@@ -392,7 +392,14 @@ int calc_cernet_misc(map_bfmr_t *r, misc_arg_t *cfg) {
 
   int m_bits = 16 - map_psid_bits - map_port_offset;
 
-  int64_t eabits = find_eabits_from_pd(r, map_psid_bits);
+  int64_t eabits;
+
+  if ((map_psid_bits < 0) || (map_psid_bits > 15)) {
+    error("PSID bits count should be between 0 and 15 (computed: %d)\n", map_psid_bits);
+    return 0;
+  } 
+
+  eabits  = find_eabits_from_pd(r, map_psid_bits);
 
   debug("calc_cernet_misc: map_psid_bits: %d, map_suffix_bits: %d, m_bits: %d\n", map_psid_bits, map_suffix_bits, m_bits);
   
