@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<html lang="en">
+<!-- 
+Besides being HTML5 compliant, this does not have much to boast about. 
+When I decide who my best enemy is, I will delegate them 
+the task of supporting this code.
+
+There's almost no error handling here. Be careful.
+
+-->
+<head>
+<script type="text/javascript" src="sprintf.js"></script>
+<script type="text/javascript" src="ipv6.js"></script>
+<script>
+
+var OPT_MAP_BMR = "4202";
+var OPT_MAP_DMR = "4203";
+
+function packhex(hex_opt_num_val, hex_value) {
+  var len = Math.floor(hex_value.length/2);
+  return (hex_opt_num_val + sprintf("%02x%02x", Math.floor(len/256), len%256) + hex_value);
+}
+
+function compactpref(hexpref, pref_len) {
+  var bytesize = Math.floor(pref_len/8); 
+  if ((pref_len%8) > 0) {
+    bytesize = bytesize + 1;
+  }
+  return (hexpref.substring(0, bytesize*2));
+}
+
+function create_bmr(aLine) {
+  var content = aLine.replace(/[{}]/g, "");
+  if (content.substring(0,1) == '!') {
+    return '';
+  }
+  var e = content.split(/,/);
+  if (e.length < 6) { return ""; }
+
+  var ip4parts = e[2].split("/");
+  var ip4 = (new v4.Address(ip4parts[0])).toHex().replace(/:/g,"");
+  var ip4pref = sprintf("%02x%s", parseInt(ip4parts[1]), ip4);
+  var ip6_parts = e[1].split("/");
+  var ip6 = ((new v6.Address(ip6_parts[0]+"::")).canonicalForm().replace(/:/g,''));
+  var ip6_len = parseInt(ip6_parts[1]);
+  var o = ip4pref + sprintf("%02x%02x%02x", parseInt(e[3]), 0, ip6_len) + compactpref(ip6, ip6_len);
+  return o;
+}
+
+function nonEmpty(el) {
+  return (el != '');
+}
+
+function genOption() {
+  var input = document.getElementById("input").value;
+  var lines = input.split("\n");
+  var dmrbr = document.getElementById("DMR").value;
+  var maptype = document.getElementById("maptype").value;
+
+  var dmr_parts = dmrbr.split("/");
+  var dmr = (new v6.Address(dmr_parts[0])).canonicalForm().replace(/:/g,'');
+  var dmr_len = parseInt(dmr_parts[1]);
+
+  var opt_dmr = packhex(OPT_MAP_DMR, sprintf("%02x", dmr_len) + compactpref(dmr, dmr_len));
+
+  var output = '';
+  var text_output = '';
+
+  for (var i = 0; i < lines.length; i++) {
+    var bmr = create_bmr(lines[i]);
+    if (bmr != '') {
+      output = output + packhex(OPT_MAP_BMR, bmr);
+    }
+  }
+  if (maptype == 'E') {
+    output = '01' + output;
+  } else {
+    output = '00' + output;
+  }
+  output = output + opt_dmr;
+  text_output = "# For unit tests / shell scripts:\n" + 
+                "export OPTION_48879=\"" + output + "\"\n\n" +
+                "# For ISC DHCPD dhcpd6.conf (ensure the lines are copied in full!)\n" + 
+                "option dhcp6.map-option code 48879 = string;\n" +
+                "option dhcp6.map-option " + (output.split(/(..)/).filter(nonEmpty).join(":")) + ";\n" +
+                "\n\n\n";
+  
+  document.getElementById("output").value = text_output;
+}
+</script>
+</head>
+<body>
+<form>
+<h1>DHCPv6 MAP provisioning</h1>
+<p>According to https://github.com/ayourtch/mdpc/blob/master/draft/draft-ietf-softwire-map-dhcp-03.txt, 
+with arbitrary values for the options (consistent with those arbitrarily chosen for mdpc).
+</p>
+<h2>Input</h2>
+<textarea id="input" rows=5 cols=120>
+! paste the text config from http://6lab.cisco.com/map/MAP.php here
+{Rule 0,2001:6f8:147e:1000/52,1.1.1.1/32,4,6,0}
+</textarea>
+<hr/>
+BR address (/128) or DMR prefix (/64):<input type="text" id="DMR" value="2610:d0:1208:cafe::/64">
+Flavour:
+<select id="maptype">
+<option value="E">MAP-E
+<option value="T">MAP-T
+</select>
+<input type="button" value="Generate DHCP option" onClick="genOption()">
+<hr/>
+<h2>Output</h2>
+<br/>
+<textarea id="output" rows=15 cols=120>
+</textarea>
+</form>
+</body>
+</html>
