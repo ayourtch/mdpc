@@ -399,7 +399,7 @@ int calc_cernet_misc(map_bfmr_t *r, misc_arg_t *cfg) {
     return 0;
   } 
 
-  eabits  = find_eabits_from_pd(r, map_psid_bits);
+  eabits = find_eabits_from_pd(r, map_psid_bits);
 
   debug("calc_cernet_misc: map_psid_bits: %d, map_suffix_bits: %d, m_bits: %d\n", map_psid_bits, map_suffix_bits, m_bits);
   
