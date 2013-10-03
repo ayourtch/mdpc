@@ -230,6 +230,7 @@ typedef struct misc_arg_t {
   int64_t suffix;
   int pd_prefix6_len;
   cpe_config_t cpe;
+  char map_type; // 'E' or 'T'
 } misc_arg_t;
 
 
@@ -250,21 +251,21 @@ struct in_addr offset_ipv4(struct in_addr base, int64_t suffix) {
 int cernet_map_rule_print(char *dst, size_t size, void *map_arg, misc_arg_t *cfg) {
   map_bfmr_t *r = map_arg;
   char v6addr[INET6_ADDRSTRLEN+1];
-  char *fmt = "ivictl -s -i br-lan -I %s -H -a 192.168.1.1/24 -A %s/%d -P %s/%d -R %d -z %d -o %lld -c %d -T";
+  char *fmt = "ivictl -s -i br-lan -I %s -H -a 192.168.1.1/24 -A %s/%d -P %s/%d -R %d -z %d -o %lld -c %d -%c";
 
   return snprintf(dst, size, fmt, 
                   cfg->cpe.wan_intf, inet_ntoa(offset_ipv4(r->rule_ipv4_prefix, cfg->suffix)), r->prefix4_len,
                   inet_ntop(AF_INET6, &r->rule_ipv6_prefix, v6addr, sizeof(v6addr)), r->prefix6_len,
-                  cfg->r_value, cfg->z_value, cfg->psid, cfg->cpe.mss);
+                  cfg->r_value, cfg->z_value, cfg->psid, cfg->cpe.mss, cfg->map_type);
 }
 
 int cernet_dmr_print(char *dst, size_t size, void *map_arg, misc_arg_t *cfg) {
   map_dmr_t *r = map_arg;
   char v6addr[INET6_ADDRSTRLEN+1];
-  char *fmt = "ivictl -r -d -P %s/%d -T";
+  char *fmt = "ivictl -r -d -P %s/%d -%c";
 
   return snprintf(dst, size, fmt, 
-                  inet_ntop(AF_INET6, &r->dmr_ipv6_prefix, v6addr, sizeof(v6addr)), r->dmr_prefix6_len);
+                  inet_ntop(AF_INET6, &r->dmr_ipv6_prefix, v6addr, sizeof(v6addr)), r->dmr_prefix6_len, cfg->map_type);
 }
 
 char *make_command(cmd_gen_t print_func, void *map_arg, misc_arg_t *misc) {
@@ -397,7 +398,7 @@ int calc_cernet_misc(map_bfmr_t *r, misc_arg_t *cfg) {
   if ((map_psid_bits < 0) || (map_psid_bits > 15)) {
     error("PSID bits count should be between 0 and 15 (computed: %d)\n", map_psid_bits);
     return 0;
-  } 
+  }
 
   eabits = find_eabits_from_pd(r, map_psid_bits);
 
@@ -434,6 +435,12 @@ int parse_map(uint8_t *d, int dlen, cpe_config_t *cfg) {
     map_flags = MAP_FLAGS_TRANS;
   } else {
     map_flags = *d++;
+  }
+
+  if ((map_flags & MAP_FLAGS_ENCAP) == MAP_FLAGS_TRANS) {
+    misc.map_type = 'T';
+  } else {
+    misc.map_type = 'E';
   }
 
   misc.cpe = *cfg;
