@@ -3,5 +3,6 @@ PD prefix: 2001:db8:0012:3400::
 EAbits-multibyte [ 40 .. 56 ] = 4660
 calc_cernet_misc: map_psid_bits: 8, map_suffix_bits: 8, m_bits: 4
 DMR: IPv6: 2610:d0:1208:cafe::/64
-ivictl -s -i br-lan -I wan0 -H -a 192.168.1.1/24 -A 192.0.2.18/24 -P 2001:db8::/40 -R 256 -z 4 -o 52 -c 1234 -T
+Suffix after shifting: 120000
+ivictl -s -i br-lan -I wan0 -H -a 192.168.1.1/24 -A 192.0.2.18/24 -P 2001:db8:12::/48 -R 256 -z 4 -o 52 -c 1234 -T
 ivictl -r -d -P 2610:d0:1208:cafe::/64 -T

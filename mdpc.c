@@ -228,6 +228,8 @@ typedef struct misc_arg_t {
   int z_value;
   int64_t psid;
   int64_t suffix;
+  int map_psid_bits;
+  int map_suffix_bits;
   int pd_prefix6_len;
   cpe_config_t cpe;
   char map_type; // 'E' or 'T'
@@ -252,10 +254,35 @@ int cernet_map_rule_print(char *dst, size_t size, void *map_arg, misc_arg_t *cfg
   map_bfmr_t *r = map_arg;
   char v6addr[INET6_ADDRSTRLEN+1];
   char *fmt = "ivictl -s -i br-lan -I %s -H -a 192.168.1.1/24 -A %s/%d -P %s/%d -R %d -z %d -o %lld -c %d -%c";
+  struct in6_addr rule_ipv6_prefix_with_suffix = r->rule_ipv6_prefix;
+  int64_t suffix_shifted = cfg->suffix;
 
+  /* We already checked this to be >=0 in calc_cernet_misc. The below blurb makes the adjusted IPv6 prefix, with suffix bits. */
+  int nshift6 = 64 - r->prefix6_len - cfg->map_suffix_bits;
+  uint8_t *pb1, *pb2;
+  int i;
+
+  while(nshift6--) { 
+    suffix_shifted = suffix_shifted << 1; 
+  }
+
+  if (cfg->map_suffix_bits) {
+    if (dst) { 
+      printf("Suffix after shifting: %llx\n", suffix_shifted); 
+    }
+  }
+
+  pb2 = (void *)&rule_ipv6_prefix_with_suffix;
+  pb2 += 7; // 8*8 = 64 bits, this is the last byte.
+  for(i=0; i<7; i++) {
+    *pb2 = *pb2 | (suffix_shifted & 0xff);
+    suffix_shifted = suffix_shifted >> 8;
+    pb2--;
+  }
+  
   return snprintf(dst, size, fmt, 
                   cfg->cpe.wan_intf, inet_ntoa(offset_ipv4(r->rule_ipv4_prefix, cfg->suffix)), r->prefix4_len,
-                  inet_ntop(AF_INET6, &r->rule_ipv6_prefix, v6addr, sizeof(v6addr)), r->prefix6_len,
+                  inet_ntop(AF_INET6, &rule_ipv6_prefix_with_suffix, v6addr, sizeof(v6addr)), r->prefix6_len + cfg->map_suffix_bits,
                   cfg->r_value, cfg->z_value, cfg->psid, cfg->cpe.mss, cfg->map_type);
 }
 
@@ -404,8 +431,14 @@ int calc_cernet_misc(map_bfmr_t *r, misc_arg_t *cfg) {
 
   debug("calc_cernet_misc: map_psid_bits: %d, map_suffix_bits: %d, m_bits: %d\n", map_psid_bits, map_suffix_bits, m_bits);
   
+  if ((64 - r->prefix6_len - map_suffix_bits) < 0) {
+    error("The adjusted IPv6 prefix can not be longer than /64 (Now: rule_prefix6_len:%d + suffix_bits:%d = %d)\n", 
+          r->prefix6_len, map_suffix_bits, r->prefix6_len+map_suffix_bits);
+    return 0;
+  }
 
-
+  cfg->map_psid_bits = map_psid_bits;
+  cfg->map_suffix_bits = map_suffix_bits;
   cfg->r_value = 1 << map_psid_bits;
   cfg->z_value = map_port_offset;
   if (eabits >= 0) {
