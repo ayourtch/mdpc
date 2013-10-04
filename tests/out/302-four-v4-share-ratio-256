@@ -4,5 +4,5 @@ EAbits-multibyte [ 50 .. 60 ] = 497
 calc_cernet_misc: map_psid_bits: 8, map_suffix_bits: 2, m_bits: 4
 DMR: IPv6: 2610:d0:1208:caff::/64
 Suffix after shifting: 1000
-ivictl -s -i br-lan -I br-wan6 -H -a 192.168.1.1/24 -A 153.16.17.85/30 -P 2001:6f8:3d4:d000::/52 -R 256 -z 4 -o 241 -c 1300 -T
+ivictl -s -i br-lan -I br-wan6 -H -a 192.168.1.1/24 -A 153.16.17.85/32 -P 2001:6f8:3d4:d000::/52 -R 256 -z 4 -o 241 -c 1300 -T
 ivictl -r -d -P 2610:d0:1208:caff::/64 -T

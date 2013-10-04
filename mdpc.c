@@ -281,7 +281,7 @@ int cernet_map_rule_print(char *dst, size_t size, void *map_arg, misc_arg_t *cfg
   }
   
   return snprintf(dst, size, fmt, 
-                  cfg->cpe.wan_intf, inet_ntoa(offset_ipv4(r->rule_ipv4_prefix, cfg->suffix)), r->prefix4_len,
+                  cfg->cpe.wan_intf, inet_ntoa(offset_ipv4(r->rule_ipv4_prefix, cfg->suffix)), 32,
                   inet_ntop(AF_INET6, &rule_ipv6_prefix_with_suffix, v6addr, sizeof(v6addr)), r->prefix6_len + cfg->map_suffix_bits,
                   cfg->r_value, cfg->z_value, cfg->psid, cfg->cpe.mss, cfg->map_type);
 }
