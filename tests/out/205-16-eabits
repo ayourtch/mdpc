@@ -1,2 +1,0 @@
-RULE: IPv4: 192.0.2.0/24, EA len: 24, Flags: 0, IPv6: 2001:db8::/40
-PSID bits count should be between 0 and 15 (computed: 16)

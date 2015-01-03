@@ -1,8 +1,0 @@
-RULE: IPv4: 192.0.2.192/28, EA len: 8, Flags: 0, IPv6: 2001:db8:f00:5000::/52
-PD prefix: 2001:db8:f00:5ff0::
-EAbits-multibyte [ 52 .. 60 ] = 255
-calc_cernet_misc: map_psid_bits: 4, map_suffix_bits: 4, m_bits: 8
-DMR: IPv6: 2610:d0:1208:cafe::/64
-Suffix after shifting: f00
-ivictl -s -i br-lan -I wan0 -H -a 192.168.1.1/24 -A 192.0.2.207/32 -P 2001:db8:f00:5f00::/56 -R 16 -z 4 -o 15 -c 1234 -T
-ivictl -r -d -P 2610:d0:1208:cafe::/64 -T

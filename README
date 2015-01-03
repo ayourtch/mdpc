@@ -1,8 +1,6 @@
-This is a small script to parse the DHCPv6 arguments from the environment variable,
-e.g. supplied by odhcp6c, and generate the appropriate arguments for CERNET MAP
-client (https://github.com/cernet/MAP).
+This code was not updated for a while and should no longer be used.
 
-At the moment both MAP-T and MAP-E are supported, but only DMR/BMR/BR; no FMR rules (yet).
+MAP support is now part of odhcp6c in OpenWRT.
 
 
 
